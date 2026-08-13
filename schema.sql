@@ -193,6 +193,18 @@ CREATE TABLE campaign_media (
 DROP INDEX IF EXISTS idx_camp_media_id; CREATE UNIQUE INDEX idx_camp_media_id ON campaign_media (campaign_id, media_id);
 DROP INDEX IF EXISTS idx_camp_media_camp_id; CREATE INDEX idx_camp_media_camp_id ON campaign_media(campaign_id);
 
+-- forms
+DROP TABLE IF EXISTS forms CASCADE;
+CREATE TABLE forms (
+    id               SERIAL PRIMARY KEY,
+    uuid uuid        NOT NULL UNIQUE,
+    name             TEXT NOT NULL,
+    list_ids         INTEGER[] NOT NULL DEFAULT '{}',
+    redirect_url     TEXT NOT NULL DEFAULT '',
+    created_at       TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at       TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
 
 -- links
 DROP TABLE IF EXISTS links CASCADE;

@@ -107,6 +107,17 @@ input[disabled] {
   border: 1px solid #eee;
 }
 
+/* Bare-bones layout used when the subscription form is rendered for
+   embedding in an <iframe> on an external site (?simple=1). */
+.container.embed {
+  margin: 0 auto;
+}
+.wrap.embed {
+  padding: 20px;
+  box-shadow: none;
+  border: none;
+}
+
 .header {
   border-bottom: 1px solid #eee;
   padding-bottom: 15px;

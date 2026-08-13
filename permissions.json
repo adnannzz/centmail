@@ -57,6 +57,14 @@
         ]
     },
     {
+        "group": "forms",
+        "permissions":
+        [
+            "forms:get",
+            "forms:manage"
+        ]
+    },
+    {
         "group": "users",
         "permissions":
         [

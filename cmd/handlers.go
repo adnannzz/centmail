@@ -189,6 +189,12 @@ func initHTTPHandlers(e *echo.Echo, a *App) {
 		g.PUT("/api/templates/:id/default", pm(hasID(a.TemplateSetDefault), "templates:manage"))
 		g.DELETE("/api/templates/:id", pm(hasID(a.DeleteTemplate), "templates:manage"))
 
+		g.GET("/api/forms", pm(a.GetForms, "forms:get"))
+		g.GET("/api/forms/:id", pm(hasID(a.GetForm), "forms:get"))
+		g.POST("/api/forms", pm(a.CreateForm, "forms:manage"))
+		g.PUT("/api/forms/:id", pm(hasID(a.UpdateForm), "forms:manage"))
+		g.DELETE("/api/forms/:id", pm(hasID(a.DeleteForm), "forms:manage"))
+
 		g.DELETE("/api/maintenance/subscribers/:type", pm(a.GCSubscribers, "settings:maintain"))
 		g.DELETE("/api/maintenance/analytics/:type", pm(a.GCCampaignAnalytics, "settings:maintain"))
 		g.GET("/api/maintenance/analytics/:type/export", pm(a.ExportCampaignAnalytics, "settings:maintain"))
@@ -236,9 +242,9 @@ func initHTTPHandlers(e *echo.Echo, a *App) {
 			g.POST("/webhooks/service/:service", a.BounceWebhook)
 		}
 
-		// Landing page.
+		// Landing page redirects straight to the login form.
 		g.GET("/", func(c echo.Context) error {
-			return c.Render(http.StatusOK, "home", publicTpl{Title: "listmonk"})
+			return c.Redirect(http.StatusFound, path.Join(uriAdmin, "/login"))
 		})
 
 		// Public admin endpoints (login page, OIDC endpoints, password reset).

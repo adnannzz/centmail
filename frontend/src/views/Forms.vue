@@ -1,176 +1,158 @@
 <template>
   <section class="forms content relative">
-    <h1 class="title is-4">
-      {{ $t('forms.title') }}
-    </h1>
+    <header class="columns page-header">
+      <div class="column is-10">
+        <h1 class="title is-4">
+          {{ $t('forms.title') }}
+          <span v-if="forms.length > 0">({{ forms.length }})</span>
+        </h1>
+      </div>
+      <div class="column has-text-right">
+        <b-field v-if="$can('forms:manage')" expanded>
+          <b-button expanded type="is-primary" icon-left="plus" class="btn-new" @click="showNewForm"
+            data-cy="btn-new">
+            {{ $t('globals.buttons.new') }}
+          </b-button>
+        </b-field>
+      </div>
+    </header>
+    <p class="has-text-grey">
+      {{ $t('forms.pageHelp') }}
+    </p>
     <hr />
 
-    <b-loading v-if="loading.lists" :active="loading.lists" :is-full-page="false" />
-    <p v-else-if="publicLists.length === 0">
-      {{ $t('forms.noPublicLists') }}
-    </p>
-    <div class="columns" v-else-if="publicLists.length > 0">
-      <div class="column is-4">
-        <h4>{{ $t('forms.publicLists') }}</h4>
-        <p>{{ $t('forms.selectHelp') }}</p>
+    <b-table :data="forms" :hoverable="true" :loading="loading.forms" default-sort="createdAt">
+      <b-table-column v-slot="props" field="name" :label="$t('globals.fields.name')" :td-attrs="$utils.tdID" sortable>
+        <a href="#" @click.prevent="showEditForm(props.row)">
+          {{ props.row.name }}
+        </a>
+      </b-table-column>
 
-        <b-loading :active="loading.lists" :is-full-page="false" />
-        <ul class="no" data-cy="lists">
-          <li v-for="(l, i) in publicLists" :key="l.id">
-            <b-checkbox v-model="checked" :native-value="i">
-              {{ l.name }}
-            </b-checkbox>
-          </li>
-        </ul>
+      <b-table-column v-slot="props" field="lists" :label="$t('globals.terms.lists')">
+        <span class="has-text-grey">{{ (props.row.listIds || []).length }}</span>
+      </b-table-column>
 
-        <template v-if="serverConfig.public_subscription.enabled">
-          <hr />
-          <h4>{{ $t('forms.publicSubPage') }}</h4>
-          <p>
-            <a :href="`${serverConfig.root_url}/subscription/form`" target="_blank" rel="noopener noreferer"
-              data-cy="url">
-              {{ serverConfig.root_url }}/subscription/form
-            </a>
-          </p>
-        </template>
+      <b-table-column v-slot="props" field="createdAt" :label="$t('globals.fields.createdAt')" sortable>
+        {{ $utils.niceDate(props.row.createdAt) }}
+      </b-table-column>
 
-        <hr />
-        <h4>{{ $t('forms.redirectURL') }}</h4>
-        <p class="is-size-7 has-text-grey">
-          {{ $t('forms.redirectURLHelp') }}
-        </p>
-        <ul v-if="redirectURLs.length > 0" class="no" data-cy="redirect-urls">
-          <li>
-            <b-radio v-model="selectedRedirectURL" native-value="">
-              {{ $t('globals.terms.none') }}
-            </b-radio>
-          </li>
-          <li v-for="url in redirectURLs" :key="url">
-            <b-radio v-model="selectedRedirectURL" :native-value="url">
-              {{ url }}
-            </b-radio>
-          </li>
-        </ul>
-      </div>
-      <div class="column" data-cy="form">
-        <h4>{{ $t('forms.formHTML') }}</h4>
-        <p>
-          {{ $t('forms.formHTMLHelp') }}
-        </p>
+      <b-table-column v-slot="props" cell-class="actions" align="right">
+        <div>
+          <a href="#" @click.prevent="showEmbed(props.row)" data-cy="btn-code" :aria-label="$t('forms.getCode')">
+            <b-tooltip :label="$t('forms.getCode')" type="is-dark">
+              <b-icon icon="code" size="is-small" />
+            </b-tooltip>
+          </a>
+          <a href="#" @click.prevent="showEditForm(props.row)" data-cy="btn-edit"
+            :aria-label="$t('globals.buttons.edit')">
+            <b-tooltip :label="$t('globals.buttons.edit')" type="is-dark">
+              <b-icon icon="pencil-outline" size="is-small" />
+            </b-tooltip>
+          </a>
+          <a href="#" @click.prevent="deleteForm(props.row)" data-cy="btn-delete"
+            :aria-label="$t('globals.buttons.delete')">
+            <b-tooltip :label="$t('globals.buttons.delete')" type="is-dark">
+              <b-icon icon="trash-can-outline" size="is-small" />
+            </b-tooltip>
+          </a>
+        </div>
+      </b-table-column>
 
-        <code-editor lang="html" v-if="checked.length > 0" v-model="html" disabled />
-      </div>
-    </div><!-- columns -->
+      <template #empty v-if="!loading.forms">
+        <empty-placeholder />
+      </template>
+    </b-table>
+
+    <!-- Add / edit form modal -->
+    <b-modal scroll="keep" :aria-modal="true" :active.sync="isFormVisible" :width="700">
+      <form-edit :data="curItem" :is-editing="isEditing" @finished="formFinished" />
+    </b-modal>
+
+    <!-- Embed code modal -->
+    <b-modal scroll="keep" :aria-modal="true" :active.sync="isEmbedVisible" :width="900">
+      <form-embed :data="curItem" />
+    </b-modal>
   </section>
 </template>
 
 <script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import CodeEditor from '../components/CodeEditor.vue';
+import EmptyPlaceholder from '../components/EmptyPlaceholder.vue';
+import FormEdit from './FormEdit.vue';
+import FormEmbed from './FormEmbed.vue';
 
 export default Vue.extend({
-  name: 'ListForm',
+  name: 'Forms',
 
   components: {
-    'code-editor': CodeEditor,
+    EmptyPlaceholder,
+    FormEdit,
+    FormEmbed,
   },
 
   data() {
     return {
-      checked: [],
-      html: '',
-      selectedRedirectURL: '',
+      curItem: null,
+      isEditing: false,
+      isFormVisible: false,
+      isEmbedVisible: false,
     };
   },
 
   methods: {
-    escapeAttr(value) {
-      return String(value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+    fetchForms() {
+      this.$api.getForms();
     },
 
-    renderHTML() {
-      let h = `<form method="post" action="${this.serverConfig.root_url}/subscription/form" class="listmonk-form">\n`
-        + '  <div>\n'
-        + `    <h3>${this.$t('public.sub')}</h3>\n`
-        + '    <input type="hidden" name="nonce" />\n';
+    showEditForm(data) {
+      this.curItem = data;
+      this.isFormVisible = true;
+      this.isEditing = true;
+    },
 
-      if (this.selectedRedirectURL) {
-        h += `    <input type="hidden" name="next" value="${this.escapeAttr(this.selectedRedirectURL)}" />\n`;
-      }
+    showNewForm() {
+      this.curItem = {};
+      this.isFormVisible = true;
+      this.isEditing = false;
+    },
 
-      h += '\n'
-        + `    <p><input type="email" name="email" required placeholder="${this.$t('subscribers.email')}" /></p>\n`
-        + `    <p><input type="text" name="name" placeholder="${this.$t('public.subName')}" /></p>\n\n`;
+    showEmbed(data) {
+      this.curItem = data;
+      this.isEmbedVisible = true;
+    },
 
-      this.checked.forEach((i) => {
-        const l = this.publicLists[parseInt(i, 10)];
+    formFinished() {
+      this.fetchForms();
+    },
 
-        h += '    <p>\n'
-          + `      <input id="${l.uuid.substr(0, 5)}" type="checkbox" name="l" checked value="${l.uuid}" />\n`
-          + `      <label for="${l.uuid.substr(0, 5)}">${l.name}</label>\n`;
-
-        if (l.description) {
-          h += '      <br />\n'
-            + `      <span>${l.description}</span>\n`;
-        }
-
-        h += '    </p>\n';
-      });
-
-      // Captcha?
-      if (this.serverConfig.public_subscription.captcha_enabled) {
-        if (this.serverConfig.public_subscription.captcha_provider === 'altcha') {
-          h += '\n'
-            + `    <altcha-widget challengeurl="${this.serverConfig.root_url}/api/public/captcha/altcha"></altcha-widget>\n`
-            + `    <${'script'} type="module" src="${this.serverConfig.root_url}/public/static/altcha.umd.js" async defer></${'script'}>\n`;
-        } else if (this.serverConfig.public_subscription.captcha_provider === 'hcaptcha') {
-          h += '\n'
-            + `    <div class="h-captcha" data-sitekey="${this.serverConfig.public_subscription.captcha_key}"></div>\n`
-            + `    <${'script'} src="https://js.hcaptcha.com/1/api.js" async defer></${'script'}>\n`;
-        }
-      }
-
-      h += '\n'
-        + `    <input type="submit" value="${this.$t('public.sub')} " />\n`
-        + '  </div>\n'
-        + '</form>';
-
-      this.html = h;
+    deleteForm(f) {
+      this.$utils.confirm(
+        this.$t('forms.confirmDelete'),
+        () => {
+          this.$api.deleteForm(f.id).then(() => {
+            this.fetchForms();
+            this.$utils.toast(this.$t('globals.messages.deleted', { name: f.name }));
+          });
+        },
+      );
     },
   },
 
   computed: {
-    ...mapState(['loading', 'lists', 'serverConfig']),
-
-    publicLists() {
-      if (!this.lists.results) {
-        return [];
-      }
-      return this.lists.results.filter((l) => l.type === 'public');
-    },
-
-    redirectURLs() {
-      const urls = this.serverConfig.public_subscription
-        ? this.serverConfig.public_subscription.redirect_urls
-        : [];
-      return Array.isArray(urls) ? urls : [];
-    },
+    ...mapState(['forms', 'loading']),
   },
 
-  watch: {
-    checked() {
-      this.renderHTML();
-    },
+  created() {
+    this.$root.$on('page.refresh', this.fetchForms);
+  },
 
-    selectedRedirectURL() {
-      this.renderHTML();
-    },
+  destroyed() {
+    this.$root.$off('page.refresh', this.fetchForms);
+  },
+
+  mounted() {
+    this.fetchForms();
   },
 });
 </script>

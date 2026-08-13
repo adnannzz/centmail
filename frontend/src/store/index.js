@@ -41,6 +41,7 @@ export default new Vuex.Store({
     [models.campaigns]: (state) => state[models.campaigns],
     [models.media]: (state) => state[models.media],
     [models.templates]: (state) => state[models.templates],
+    [models.forms]: (state) => state[models.forms],
     [models.users]: (state) => state[models.users],
     [models.profile]: (state) => state[models.profile],
     [models.userRoles]: (state) => state[models.userRoles],

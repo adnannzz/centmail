@@ -90,6 +90,8 @@ type msgTpl struct {
 type subFormTpl struct {
 	publicTpl
 	Lists   []models.List
+	Simple  bool
+	Next    string
 	Captcha struct {
 		Enabled    bool
 		Provider   string
@@ -440,9 +442,71 @@ func (a *App) SubscriptionFormPage(c echo.Context) error {
 			makeMsgTpl(a.i18n.T("public.errorTitle"), "", a.i18n.Ts("public.noListsAvailable")))
 	}
 
+	// An optional `form` UUID identifies a saved form (Lists -> Forms). If
+	// it resolves, its saved list selection and redirect URL become the
+	// defaults for the page below. An unknown/invalid UUID is silently
+	// ignored, same as an invalid `l`.
+	var savedForm models.Form
+	if formUUID := c.QueryParam("form"); formUUID != "" {
+		if f, err := a.core.GetForm(0, formUUID); err == nil {
+			savedForm = f
+		}
+	}
+
+	// A saved form's list selection takes precedence. Otherwise, an
+	// optional `l` (repeatable) query param narrows the lists shown on the
+	// form, allowing an admin to embed (eg: in an <iframe>) a form for a
+	// specific subset of public lists rather than every public list. Any
+	// UUID/ID that doesn't match a public, active list is silently ignored,
+	// and if none of them match, all public lists are shown.
+	if len(savedForm.ListIDs) > 0 {
+		want := make(map[int]bool, len(savedForm.ListIDs))
+		for _, id := range savedForm.ListIDs {
+			want[int(id)] = true
+		}
+
+		filtered := make([]models.List, 0, len(lists))
+		for _, l := range lists {
+			if want[l.ID] {
+				filtered = append(filtered, l)
+			}
+		}
+
+		if len(filtered) > 0 {
+			lists = filtered
+		}
+	} else if uuids := c.QueryParams()["l"]; len(uuids) > 0 {
+		want := make(map[string]bool, len(uuids))
+		for _, u := range uuids {
+			want[u] = true
+		}
+
+		filtered := make([]models.List, 0, len(lists))
+		for _, l := range lists {
+			if want[l.UUID] {
+				filtered = append(filtered, l)
+			}
+		}
+
+		if len(filtered) > 0 {
+			lists = filtered
+		}
+	}
+
 	out := subFormTpl{}
 	out.Title = a.i18n.T("public.sub")
 	out.Lists = lists
+
+	// `simple=1` renders a bare-bones version of the page (no site header,
+	// logo, or footer) that's meant to be embedded in an <iframe> on an
+	// external site. `next`, if present, is carried through as a hidden
+	// field on the form; the actual trusted-URL check happens on submit.
+	// It defaults to the saved form's redirect URL, if any.
+	out.Simple = c.QueryParam("simple") != ""
+	out.Next = c.QueryParam("next")
+	if out.Next == "" {
+		out.Next = savedForm.RedirectURL
+	}
 
 	// Captcha configuration for template rendering.
 	if a.cfg.Security.Captcha.Altcha.Enabled {

@@ -103,6 +103,12 @@ type Queries struct {
 	SetDefaultTemplate *sqlx.Stmt `query:"set-default-template"`
 	DeleteTemplate     *sqlx.Stmt `query:"delete-template"`
 
+	GetForms   *sqlx.Stmt `query:"get-forms"`
+	GetForm    *sqlx.Stmt `query:"get-form"`
+	CreateForm *sqlx.Stmt `query:"create-form"`
+	UpdateForm *sqlx.Stmt `query:"update-form"`
+	DeleteForm *sqlx.Stmt `query:"delete-form"`
+
 	CreateLink        *sqlx.Stmt `query:"create-link"`
 	GetLinkURL        *sqlx.Stmt `query:"get-link-url"`
 	RegisterLinkClick *sqlx.Stmt `query:"register-link-click"`

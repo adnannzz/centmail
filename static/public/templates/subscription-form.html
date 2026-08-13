@@ -1,5 +1,26 @@
+{{ define "header-embed" }}
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>{{ .Data.Title }}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+
+	<link href="/public/static/style.css?v={{ .AssetVersion }}" rel="stylesheet" type="text/css" />
+	<link href="/public/custom.css?v={{ .AssetVersion }}" rel="stylesheet" type="text/css">
+</head>
+<body>
+	<div class="container wrap embed">
+{{ end }}
+
+{{ define "footer-embed" }}
+	</div>
+</body>
+</html>
+{{ end }}
+
 {{ define "subscription-form" }}
-{{ template "header" . }}
+{{ if .Data.Simple }}{{ template "header-embed" . }}{{ else }}{{ template "header" . }}{{ end }}
 <section>
     <h2>{{ L.T "public.subTitle" }}</h2>
 
@@ -15,6 +36,10 @@
                 <label for="name">{{ L.T "public.subName" }}</label>
                 <input id="name" name="name" type="text" placeholder="{{ L.T "public.subName" }}" >
             </p>
+
+            {{ if .Data.Next }}
+                <input type="hidden" name="next" value="{{ .Data.Next }}" />
+            {{ end }}
 
             <ul class="lists">
                 <h2>{{ L.T "globals.terms.lists" }}</h2>
@@ -53,5 +78,5 @@
     </form>
 </section>
 
-{{ template "footer" .}}
+{{ if .Data.Simple }}{{ template "footer-embed" . }}{{ else }}{{ template "footer" . }}{{ end }}
 {{ end }}

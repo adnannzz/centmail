@@ -11,6 +11,7 @@ export const models = Object.freeze({
   subscribers: 'subscribers',
   campaigns: 'campaigns',
   templates: 'templates',
+  forms: 'forms',
   media: 'media',
   bounces: 'bounces',
   users: 'users',

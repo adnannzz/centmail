@@ -414,6 +414,29 @@ export const deleteTemplate = async (id) => http.delete(
   { loading: models.templates },
 );
 
+// Forms.
+export const getForms = async () => http.get(
+  '/api/forms',
+  { loading: models.forms, store: models.forms },
+);
+
+export const createForm = async (data) => http.post(
+  '/api/forms',
+  data,
+  { loading: models.forms },
+);
+
+export const updateForm = async (data) => http.put(
+  `/api/forms/${data.id}`,
+  data,
+  { loading: models.forms },
+);
+
+export const deleteForm = async (id) => http.delete(
+  `/api/forms/${id}`,
+  { loading: models.forms },
+);
+
 // Settings.
 export const getServerConfig = async () => http.get(
   '/api/config',

@@ -65,6 +65,8 @@ const (
 	PermMediaManage           = "media:manage"
 	PermTemplatesGet          = "templates:get"
 	PermTemplatesManage       = "templates:manage"
+	PermFormsGet              = "forms:get"
+	PermFormsManage           = "forms:manage"
 	PermUsersGet              = "users:get"
 	PermUsersManage           = "users:manage"
 	PermRolesGet              = "roles:get"
