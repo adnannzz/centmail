@@ -111,6 +111,7 @@ export default Vue.extend({
 
       // SMTP boxes.
       let hasDummy = '';
+      let smtpFromEmail = '';
       for (let i = 0; i < form.smtp.length; i += 1) {
         // trim the host before saving
         form.smtp[i].host = form.smtp[i].host?.trim();
@@ -127,6 +128,17 @@ export default Vue.extend({
         } else {
           form.smtp[i].email_headers = [];
         }
+
+        // The first enabled SMTP block with a `from_email` set syncs its
+        // complete value (name + e-mail), verbatim, into the General tab's
+        // default from e-mail on save.
+        const val = form.smtp[i].enabled && form.smtp[i].from_email && form.smtp[i].from_email.trim();
+        if (!smtpFromEmail && val && val.includes('@')) {
+          smtpFromEmail = val;
+        }
+      }
+      if (smtpFromEmail) {
+        form['app.from_email'] = smtpFromEmail;
       }
 
       // Bounces boxes.

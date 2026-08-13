@@ -68,6 +68,17 @@
                 </b-field>
               </div>
             </div><!-- auth -->
+
+            <div class="columns">
+              <div class="column">
+                <b-field :label="$t('settings.smtp.fromEmail')" label-position="on-border"
+                  :message="$t('settings.smtp.fromEmailHelp')">
+                  <b-input v-model="item.from_email" name="from_email"
+                    placeholder="Listmonk <noreply@listmonk.yoursite.com>" pattern="((.+?)\s)?<(.+?)@(.+?)>"
+                    :maxlength="300" />
+                </b-field>
+              </div>
+            </div>
             <div class="spaced-links is-size-7">
               <a href="#" @click.prevent="() => fillSettings(n, 'gmail')">Gmail</a>
               <a href="#" @click.prevent="() => fillSettings(n, 'ses')">Amazon SES</a>
@@ -296,6 +307,7 @@ export default Vue.extend({
         port: 587,
         auth_protocol: 'none',
         username: '',
+        from_email: '',
         password: '',
         email_headers: [],
         from_addresses: [],

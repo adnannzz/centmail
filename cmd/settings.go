@@ -138,6 +138,9 @@ func (a *App) UpdateSettings(c echo.Context) error {
 		// This is a common mistake when copy-pasting SMTP settings.
 		set.SMTP[i].Host = strings.TrimSpace(s.Host)
 
+		// Trim the optional from-email that's synced to the General tab's default from-email.
+		set.SMTP[i].FromEmail = strings.TrimSpace(s.FromEmail)
+
 		// If there's no password coming in from the frontend, copy the existing
 		// password by matching the UUID.
 		if s.Password == "" {

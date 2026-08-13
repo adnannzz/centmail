@@ -90,6 +90,7 @@ type Settings struct {
 		Port          int                 `json:"port"`
 		AuthProtocol  string              `json:"auth_protocol"`
 		Username      string              `json:"username"`
+		FromEmail     string              `json:"from_email"`
 		Password      string              `json:"password,omitempty"`
 		EmailHeaders  []map[string]string `json:"email_headers"`
 		MaxConns      int                 `json:"max_conns"`
