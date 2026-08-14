@@ -4,7 +4,11 @@ CentMail is a fork of the open source [listmonk](https://listmonk.app) project, 
 
 [![listmonk-dashboard](https://github.com/user-attachments/assets/689b5fbb-dd25-4956-a36f-e3226a65f9c4)](https://github.com/adnannzz/centmail)
 
-*(Screenshot above is from upstream listmonk — CentMail's UI is functionally identical aside from branding.)*
+*(Screenshot above is from upstream listmonk. CentMail's UI is based on it, plus its own additions — see below.)*
+
+Beyond the rebrand, CentMail adds a few things not in upstream listmonk:
+- **Multiple saved subscription forms** (Lists → Forms) — each with its own list selection and redirect URL, with ready-to-use HTML and `<iframe>` embed code, instead of a single ad-hoc list picker.
+- **Light / Dark / Auto theme** — a switcher in the profile menu, following the OS theme by default.
 
 ## Installation
 

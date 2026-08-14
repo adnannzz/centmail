@@ -21,6 +21,22 @@ Visit `http://localhost:8080` (frontend dev server, proxies API calls to the bac
 - **Backend does NOT hot-reload.** After any change to a `.go` file, `i18n/*.json`, `schema.sql`, or `permissions.json`, restart the backend container (e.g. `docker restart dev-backend-1`) for it to take effect.
 - Nightly/dev builds don't record their migration version in the DB, so every backend restart re-runs any pending `internal/migrations/vX.Y.Z.go` migrations — they must stay idempotent (`CREATE TABLE IF NOT EXISTS`, etc.).
 
+### Production-style local deployment
+`dev/docker-compose.prod.yml` runs the compiled `./centmail` binary (not `go run`) against the same dev Postgres data, on port 9000, as its own compose project (`centmail-prod`, separate from the `dev` project so it doesn't collide with `dev-backend-1`):
+```bash
+docker compose -f dev/docker-compose.prod.yml up -d       # start
+docker compose -f dev/docker-compose.prod.yml stop        # stop (needed before rebuilding, see below)
+docker compose -f dev/docker-compose.prod.yml logs -f
+```
+To deploy new code: the running binary file is locked while executing (`stuffbin` fails with "text file busy" if you `make dist` while `centmail-prod` is up), so **stop it first**, rebuild via a throwaway container using the `dev-backend` image, then start it back up:
+```bash
+docker compose -f dev/docker-compose.prod.yml stop
+docker run --rm -v $(pwd):/app -v ~/go/pkg/mod/cache:/go/pkg/mod/cache -w /app dev-backend \
+  sh -c 'export PATH=$PATH:/usr/local/go/bin:/go/bin GOPATH=/go; make dist'
+docker compose -f dev/docker-compose.prod.yml start
+```
+Since this binary has all static assets **stuffed in** at build time (no "using local filesystem" fallback like `dev-backend-1`), changes to `frontend/**`, `static/`, `queries/`, `i18n/`, `schema.sql`, or `permissions.json` need this full rebuild+redeploy cycle to reach it — restarting the container alone only re-reads Go code/DB-backed settings, not the stuffed assets.
+
 ### Building
 ```bash
 make build          # compiles the Go backend to ./centmail
@@ -62,6 +78,7 @@ Cypress e2e tests live in `frontend/cypress/` but aren't wired into `package.jso
 - `api/index.js`'s http layer **auto-camelCases GET response JSON keys** by default (e.g. `list_ids` → `listIds`) for consistency with the Vue/AirBnB lint spec, but this only applies to responses — outgoing POST/PUT bodies must be written with the backend's actual snake_case JSON field names. A handful of endpoints (`/api/config`, `/api/settings`, campaign headers) opt out via `camelCase: false` or a path-based `camelCase` test function.
 - Icons: this project ships a **hand-curated Fontello icon font** (`frontend/src/assets/icons/fontello.css`), not the full Material Design Icons set — only ~44 glyphs are actually compiled in (see `frontend/fontello/config.json`'s `selected: true` entries). Using an MDI icon name that isn't in that curated set silently renders nothing (no error). To add more icons, see the instructions in `frontend/README.md`.
 - i18n strings live in `i18n/*.json` at the repo root (not under `frontend/`) and are served by the backend via `/api/lang/:lang`, fetched once at app init (`main.js`) — editing them requires a backend restart in the dev stack to take effect, not just a frontend reload.
+- **Theming**: Light/Dark/Auto is a `data-theme="light"|"dark"` attribute on `<html>`, set pre-paint by an inline script in `frontend/index.html` (reading the same `listmonk_pref` localStorage key as `$utils.getPref`/`setPref`) and kept in sync by `App.vue`'s `applyTheme()` + a `prefers-color-scheme` listener for Auto mode. The dark palette itself is one big `[data-theme="dark"] { ... }` block appended at the end of `frontend/src/assets/style.scss`. **Gotcha**: this app has several *pre-existing, overlapping* light-mode custom rules for what looks like the same visual element — e.g. a floating-label background is set by both Buefy's own `::before` cutout *and* a separate hand-written `.field.is-floating-label label.label { background-color: $white }` rule; active-tab backgrounds differ between plain and `is-boxed` `<b-tabs>`; every `.input`/`.textarea` gets a light `box-shadow` fully independent of its `border-color`. Don't assume fixing the "obvious" rule (matching Buefy/Bulma's own source) is enough — grep the surrounding light-mode CSS for the same selector/property before concluding a dark-mode override isn't taking effect.
 
 ### Rebrand-specific notes
 Real upstream infrastructure this fork doesn't own was deliberately left pointing at listmonk during the rebrand rather than being renamed to something fictional: the `docs/` directory (Hugo marketing site, mkdocs, Postman/swagger collections), `.goreleaser*.yml` and `.github/workflows/nightly.yml`'s Docker image tags (`ghcr.io/knadh/listmonk`), and outbound docs links in the admin UI (`https://listmonk.app/docs/...`). Don't "fix" these to say centmail.app/etc. without setting up the corresponding real infrastructure first.
