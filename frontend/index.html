@@ -4,6 +4,24 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <script>
+      // Applied before first paint to avoid a flash of the wrong theme.
+      // Kept in sync with utils.js's getPref()/setPref() (localStorage key
+      // "listmonk_pref") and App.vue's applyTheme().
+      (function themeInit() {
+        try {
+          var raw = localStorage.getItem('listmonk_pref');
+          var pref = raw ? JSON.parse(raw) : {};
+          var mode = pref['app.theme'] || 'auto';
+          var resolved = mode === 'auto'
+            ? (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+            : mode;
+          document.documentElement.setAttribute('data-theme', resolved);
+        } catch (e) {
+          // Ignore and default to the light theme.
+        }
+      }());
+    </script>
     <link rel="icon" href="/admin/static/favicon.png?v=asset_version" />
     <link href="/admin/custom.css?v=asset_version" rel="stylesheet" type="text/css">
     <script src="/admin/custom.js?v=asset_version" async defer></script>

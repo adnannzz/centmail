@@ -154,6 +154,51 @@ section {
   font-size: 1rem;
 }
 
+.theme-switcher {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &-label {
+    font-size: 0.875rem;
+    color: $grey;
+  }
+
+  &-buttons {
+    display: flex;
+    gap: 4px;
+  }
+}
+
+.theme-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: rgba($primary, 0.12);
+  color: $primary;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background: rgba($primary, 0.22);
+  }
+
+  &.is-active {
+    background: $primary;
+    color: $white;
+  }
+}
+
 .user-avatar {
   img {
     display: inline-block;
@@ -467,6 +512,15 @@ body.is-noscroll {
 /* Modal */
 .modal {
   z-index: 950;
+
+  /* The modal root and its content wrapper get `tabindex="-1"` and are
+     programmatically focused on open (Buefy's autoFocus), so without this
+     the browser's default focus outline rings the whole card. Barely
+     visible on the light theme's white modal, but stands out sharply on
+     the dark theme's near-black one. */
+  &:focus, .animation-content:focus {
+    outline: none;
+  }
 
   &.has-overflow {
     overflow: auto !important;
@@ -1427,3 +1481,270 @@ th.role-toggle-select a {
     width: auto;
   }
 }
+
+/* ==========================================================================
+   Dark theme. Applied via a `data-theme="dark"` attribute on <html>, set by
+   App.vue's applyTheme() (and, before first paint, an inline script in
+   index.html) based on the "app.theme" preference (light/dark/auto).
+
+   Bulma/Buefy's own colors are compiled to literal hex at build time, so
+   they can't be swapped via SCSS variables at runtime -- this block
+   overrides the actual rendered surfaces instead.
+   ========================================================================== */
+$dark-bg: #14151a;
+$dark-bg-raised: #1c1e24;
+$dark-bg-raised-2: #23252c;
+$dark-border: #2f323b;
+$dark-text: #e4e6eb;
+$dark-text-muted: #9aa0ac;
+$dark-primary: #4d8eff;
+
+[data-theme="dark"] {
+  html, body {
+    background: $dark-bg;
+    color: $dark-text;
+  }
+
+  a { color: $dark-primary; }
+  a:hover { color: lighten($dark-primary, 10%); }
+
+  code { color: #e6a5ff; }
+  pre { background: $dark-bg-raised; border-color: $dark-border; color: $dark-text; }
+
+  hr { background-color: $dark-border; }
+
+  .has-text-grey, .has-text-grey-light, .has-text-grey-dark { color: $dark-text-muted !important; }
+  .has-text-primary { color: $dark-primary !important; }
+  .has-text-black, .has-text-dark { color: $dark-text !important; }
+
+  .title, .subtitle, h1, h2, h3, h4, h5, h6, strong { color: $dark-text; }
+
+  .box {
+    background: $dark-bg-raised;
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, .2);
+    border-color: $dark-border;
+  }
+  .box hr { background-color: $dark-border; }
+
+  /* Nav + sidebar + main layout */
+  .navbar, .navbar-brand, .navbar-menu, .navbar-dropdown, .navbar-item {
+    background: $dark-bg-raised;
+    color: $dark-text;
+  }
+  .navbar-item, .navbar-link { color: $dark-text; }
+  .navbar-item:hover, .navbar-item.is-active, .navbar-link:hover {
+    background: $dark-bg-raised-2 !important;
+    color: $dark-text !important;
+  }
+  .navbar-dropdown { border-color: $dark-border; }
+  .navbar-item.user-name { border-bottom: 1px solid $dark-border; }
+  .user-avatar span { background-color: $dark-bg-raised-2; color: $dark-text; }
+  .theme-switcher-label { color: $dark-text-muted; }
+  .theme-btn { background: rgba($dark-primary, 0.15); color: $dark-primary; }
+  .theme-btn:hover { background: rgba($dark-primary, 0.28); }
+  .theme-btn.is-active { background: $dark-primary; color: $dark-bg; }
+
+  #app .wrapper .sidebar,
+  #app .wrapper .main {
+    background: $dark-bg;
+  }
+  #app .wrapper .sidebar { box-shadow: 0 0 3px rgba(0, 0, 0, .4); }
+
+  .b-sidebar .sidebar-content { background: transparent; }
+  .b-sidebar .menu-list a { color: $dark-text; }
+  .b-sidebar .menu-list a:hover { background: $dark-bg-raised; }
+  .b-sidebar .menu-list .router-link-exact-active {
+    background: $dark-bg-raised;
+    border-right-color: $dark-primary;
+    color: $dark-primary;
+  }
+  /* Expandable group headers (eg: "Lists") get Bulma's own .is-active
+     class, which is a *different* state from .router-link-exact-active
+     above and uses $menu-item-active-background-color -- this app set
+     that to $white-bis for the light theme, so it needs its own
+     dark-mode override. */
+  .b-sidebar .menu-list a.is-active {
+    background: $dark-bg-raised;
+    color: $dark-primary;
+  }
+
+  /* Forms. .taginput-container/.autocomplete are Buefy's tag/list-selector
+     and multiselect widgets -- they extend Bulma's %input-textarea
+     placeholder directly rather than using the .input class, so they need
+     to be listed explicitly or they're left in their light-mode colors. */
+  .input, .textarea, .select select, input, textarea, select,
+  .taginput .taginput-container.is-focusable {
+    background-color: $dark-bg-raised;
+    border-color: $dark-border;
+    color: $dark-text;
+  }
+  /* Pre-existing rule (.input, .taginput-container.is-focusable, .textarea
+     { box-shadow: 2px 2px 0 $white-ter; border: 1px solid $grey-lighter }
+     further up in this file) draws a light offset box-shadow independent
+     of border-color -- this is most of what's been reading as a bright
+     white glow/border around form fields throughout the app. */
+  .input, .taginput .taginput-container.is-focusable, .textarea {
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, .3);
+  }
+  .input::placeholder, .textarea::placeholder, input::placeholder, textarea::placeholder {
+    color: $dark-text-muted;
+  }
+  .input:focus, .textarea:focus, .select select:focus,
+  .taginput .taginput-container.is-focusable:focus-within {
+    border-color: $dark-primary;
+  }
+  .label { color: $dark-text; }
+  .help { color: $dark-text-muted; }
+  /* The "on-border" floating label cuts a gap out of the input's top
+     border using a ::before strip colored $input-background-color
+     (baked in light at build time) -- override it to match the
+     surrounding dark surface. */
+  .field.is-floating-label .label:before {
+    background-color: $dark-bg-raised;
+  }
+  /* This app has its own pre-existing rule (.field.is-floating-label
+     label.label { background-color: $white; ... }, further up in this
+     file) that paints the label element's own background solid white --
+     this is what was actually rendering, not Buefy's ::before cutout
+     above, no matter how that one was overridden. */
+  .field.is-floating-label label.label {
+    background-color: $dark-bg-raised;
+  }
+  fieldset:disabled .input, fieldset:disabled .textarea, .input[disabled], .textarea[disabled] {
+    background-color: $dark-bg;
+    color: $dark-text-muted;
+  }
+
+  /* Buttons (only the neutral/light variant -- colored is-primary/is-danger
+     etc. buttons already have enough contrast on dark backgrounds) */
+  .button {
+    background-color: $dark-bg-raised;
+    border-color: $dark-border;
+    color: $dark-text;
+  }
+  .button.is-primary, .button.is-danger, .button.is-success, .button.is-warning, .button.is-info {
+    color: #fff;
+  }
+  .button.is-outlined:not(:hover) {
+    background-color: transparent;
+  }
+
+  /* Tables */
+  table, .table {
+    background-color: $dark-bg-raised;
+    color: $dark-text;
+  }
+  table thead th, .table thead th {
+    background: $dark-bg-raised-2;
+    color: $dark-text;
+    border-color: $dark-border;
+  }
+  table td, table th, .table td, .table th {
+    border-color: $dark-border;
+    color: $dark-text;
+  }
+  /* Bulma's actual hover/striped selectors are more specific than a plain
+     "table tbody tr:hover" (they're scoped to .is-hoverable/.is-striped
+     with a :not(.is-selected) guard), so they have to be matched exactly
+     here or Bulma's own light-mode rule keeps winning. */
+  table tbody tr:hover, .table tbody tr:hover,
+  .table.is-hoverable tbody tr:not(.is-selected):hover {
+    background-color: $dark-bg-raised-2;
+  }
+  .table.is-striped tbody tr:not(.is-selected):nth-child(even) {
+    background-color: $dark-bg;
+  }
+  .table.is-striped tbody tr:not(.is-selected):nth-child(even):hover {
+    background-color: $dark-bg-raised-2;
+  }
+
+  /* Cards, modals, dropdowns, panels.
+     This app has its own pre-existing custom overrides for .modal-content/
+     .modal-card/.modal-background/.modal .modal-card-foot (white
+     background, light box-shadow/border, transparent foot) further up in
+     this file -- matched here 1:1 by selector so these definitely win
+     regardless of shorthand vs longhand property quirks. */
+  .card, .modal-card, .modal-card-head, .modal-card-body, .modal-card-foot {
+    background-color: $dark-bg-raised;
+    color: $dark-text;
+    border-color: $dark-border;
+  }
+  .modal-card-head, .modal-card-foot { background-color: $dark-bg-raised-2; }
+  .modal-content, .modal.dialog .modal-card {
+    background: $dark-bg-raised;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+    border: 1px solid $dark-border;
+  }
+  .modal .modal-card-foot {
+    background: $dark-bg-raised-2;
+  }
+  /* The modal's dimming layer is a flat semi-transparent light grey in this
+     app's light theme (rgba(241,241,241,.7)), so it's set explicitly here
+     rather than relying on compositing over a dark page. */
+  .modal-background { background: rgba(6, 7, 9, .75); }
+  .dropdown-content { background-color: $dark-bg-raised; }
+  .dropdown-item { color: $dark-text; }
+  .dropdown-item:hover, .dropdown-item.is-hovered,
+  .dropdown .dropdown-menu a.dropdown-item:hover {
+    background-color: $dark-bg-raised-2;
+    color: $dark-text;
+  }
+
+  /* Tags/notifications: only the neutral default variant, colored variants
+     (is-primary/is-danger/...) are left as-is since they're already
+     saturated colors with their own contrast. */
+  .tag:not([class*="is-"]), .notification:not([class*="is-"]) {
+    background-color: $dark-bg-raised-2;
+    color: $dark-text;
+  }
+
+  /* Misc surfaces used across settings/list/subscriber pages */
+  .b-table, .pagination-link, .pagination-previous, .pagination-next {
+    background-color: $dark-bg-raised;
+    border-color: $dark-border;
+    color: $dark-text;
+  }
+  .b-tabs .tab-content { color: $dark-text; }
+  .tabs a { color: $dark-text-muted; border-color: transparent; }
+  .tabs li.is-active a { color: $dark-primary; border-color: $dark-primary; }
+  .tabs ul { border-bottom-color: $dark-border; }
+  /* Pre-existing custom vertical settings-tab active-state highlight
+     (.settings-tabs > .tabs li.is-active { background: $grey-lightest }
+     further up in this file) -- Bulma's own plain (non-boxed/toggle) tabs
+     don't set a background at all, so this app's own rule is the one
+     that needs overriding here. */
+  .settings-tabs > .tabs li.is-active {
+    background: $dark-bg-raised;
+  }
+  /* Bulma's "boxed" tab variant (type="is-boxed", used eg. for the Domain
+     blocklist/allowlist tabs on the Privacy settings page) paints the
+     active tab's own background white, separately from the plain-tabs
+     rule above. */
+  .tabs.is-boxed li.is-active a {
+    background-color: $dark-bg-raised;
+    border-color: $dark-border;
+  }
+  .tabs.is-boxed a {
+    border-color: transparent;
+  }
+  .tabs.is-boxed a:hover {
+    background-color: $dark-bg-raised;
+  }
+
+  scrollbar-color: #{$dark-border} #{$dark-bg};
+}
+
+/* Written as fully-qualified top-level rules rather than nested inside
+   [data-theme="dark"] { } above -- the build pipeline was silently
+   dropping the [data-theme="dark"] ancestor prefix specifically for
+   ::-webkit-scrollbar-* pseudo-elements when nested, making the rule
+   apply globally (including light mode). Spelling it out here avoids
+   whatever's stripping it. */
+[data-theme="dark"] ::-webkit-scrollbar-track { background: $dark-bg; }
+[data-theme="dark"] ::-webkit-scrollbar-thumb { background: $dark-border; }
+/* Without this, the up/down arrow buttons at each end keep their native
+   light-grey appearance regardless of the track/thumb colors above --
+   that's what was still showing as a light scrollbar. Hiding them is the
+   standard approach (recoloring the arrow glyphs themselves isn't
+   reliably stylable across Chrome versions). */
+[data-theme="dark"] ::-webkit-scrollbar-button { display: none; }

@@ -33,6 +33,43 @@
             <div class="is-size-7">{{ profile.name }}</div>
           </b-navbar-item>
 
+          <b-navbar-item tag="div" class="theme-switcher">
+            <span class="theme-switcher-label">{{ $t('users.theme') }}</span>
+            <div class="theme-switcher-buttons">
+              <button type="button" class="theme-btn" :class="{ 'is-active': theme === 'auto' }"
+                @click="theme = 'auto'" :aria-label="$t('users.themeAuto')" :title="$t('users.themeAuto')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <rect x="2" y="3" width="20" height="14" rx="2" />
+                  <line x1="8" y1="21" x2="16" y2="21" />
+                  <line x1="12" y1="17" x2="12" y2="21" />
+                </svg>
+              </button>
+              <button type="button" class="theme-btn" :class="{ 'is-active': theme === 'light' }"
+                @click="theme = 'light'" :aria-label="$t('users.themeLight')" :title="$t('users.themeLight')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="5" />
+                  <line x1="12" y1="1" x2="12" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="23" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                  <line x1="1" y1="12" x2="3" y2="12" />
+                  <line x1="21" y1="12" x2="23" y2="12" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </svg>
+              </button>
+              <button type="button" class="theme-btn" :class="{ 'is-active': theme === 'dark' }"
+                @click="theme = 'dark'" :aria-label="$t('users.themeDark')" :title="$t('users.themeDark')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+              </button>
+            </div>
+          </b-navbar-item>
+
           <b-navbar-item href="#">
             <router-link to="/user/profile">
               <b-icon icon="account-outline" /> {{ $t('users.profile') }}
@@ -128,6 +165,7 @@ export default Vue.extend({
       activeItem: {},
       activeGroup: {},
       windowWidth: window.innerWidth,
+      theme: this.$utils.getPref('app.theme') || 'auto',
     };
   },
 
@@ -143,6 +181,11 @@ export default Vue.extend({
         // to non group items from sidebar
         this.activeGroup = {};
       }
+    },
+
+    theme(mode) {
+      this.$utils.setPref('app.theme', mode);
+      this.applyTheme(mode);
     },
   },
 
@@ -174,6 +217,17 @@ export default Vue.extend({
       this.$api.logout().then(() => {
         document.location.href = uris.root;
       });
+    },
+
+    // Resolves 'light'/'dark'/'auto' to an actual 'light'/'dark' and
+    // applies it as a data-theme attribute on <html> for the CSS to key off.
+    applyTheme(mode) {
+      let resolved = mode;
+      if (mode === 'auto') {
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        resolved = prefersDark ? 'dark' : 'light';
+      }
+      document.documentElement.setAttribute('data-theme', resolved);
     },
 
     listenEvents() {
@@ -223,6 +277,15 @@ export default Vue.extend({
     window.addEventListener('resize', () => {
       this.windowWidth = window.innerWidth;
     });
+
+    this.applyTheme(this.theme);
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        if (this.theme === 'auto') {
+          this.applyTheme('auto');
+        }
+      });
+    }
 
     this.listenEvents();
   },
