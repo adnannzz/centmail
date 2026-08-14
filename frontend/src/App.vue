@@ -4,7 +4,7 @@
       <template #brand>
         <div class="logo">
           <router-link :to="{ name: 'dashboard' }">
-            <img class="full" src="@/assets/logo.svg" alt="" />
+            <span class="full logo-text">CentMail</span>
             <img class="favicon" src="@/assets/favicon.png" alt="" />
           </router-link>
         </div>

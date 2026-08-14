@@ -13,16 +13,16 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"github.com/adnannzz/centmail/internal/auth"
+	"github.com/adnannzz/centmail/internal/messenger/email"
+	"github.com/adnannzz/centmail/internal/notifs"
+	"github.com/adnannzz/centmail/models"
 	"github.com/gdgvda/cron"
 	"github.com/gofrs/uuid/v5"
 	"github.com/jmoiron/sqlx/types"
 	koanfjson "github.com/knadh/koanf/parsers/json"
 	"github.com/knadh/koanf/providers/rawbytes"
 	"github.com/knadh/koanf/v2"
-	"github.com/knadh/listmonk/internal/auth"
-	"github.com/knadh/listmonk/internal/messenger/email"
-	"github.com/knadh/listmonk/internal/notifs"
-	"github.com/knadh/listmonk/models"
 	"github.com/labstack/echo/v4"
 )
 

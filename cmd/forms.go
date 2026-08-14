@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/knadh/listmonk/models"
+	"github.com/adnannzz/centmail/models"
 	"github.com/labstack/echo/v4"
 	"github.com/lib/pq"
 )

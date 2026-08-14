@@ -5,10 +5,10 @@ import (
 	"log"
 	"time"
 
+	"github.com/adnannzz/centmail/internal/bounce/mailbox"
+	"github.com/adnannzz/centmail/internal/bounce/webhooks"
+	"github.com/adnannzz/centmail/models"
 	"github.com/jmoiron/sqlx"
-	"github.com/knadh/listmonk/internal/bounce/mailbox"
-	"github.com/knadh/listmonk/internal/bounce/webhooks"
-	"github.com/knadh/listmonk/models"
 )
 
 // Mailbox represents a POP/IMAP mailbox client that can scan messages and pass

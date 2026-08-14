@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"net/http"
 
+	"github.com/adnannzz/centmail/models"
 	"github.com/gofrs/uuid/v5"
-	"github.com/knadh/listmonk/models"
 	"github.com/labstack/echo/v4"
 )
 

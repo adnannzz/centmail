@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/knadh/listmonk/internal/auth"
+	"github.com/adnannzz/centmail/internal/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/lib/pq"
 )

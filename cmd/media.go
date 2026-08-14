@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/adnannzz/centmail/models"
 	"github.com/disintegration/imaging"
-	"github.com/knadh/listmonk/models"
 	"github.com/labstack/echo/v4"
 )
 

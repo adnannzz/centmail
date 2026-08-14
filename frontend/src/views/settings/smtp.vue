@@ -74,7 +74,7 @@
                 <b-field :label="$t('settings.smtp.fromEmail')" label-position="on-border"
                   :message="$t('settings.smtp.fromEmailHelp')">
                   <b-input v-model="item.from_email" name="from_email"
-                    placeholder="Listmonk <noreply@listmonk.yoursite.com>" pattern="((.+?)\s)?<(.+?)@(.+?)>"
+                    placeholder="CentMail <noreply@centmail.yoursite.com>" pattern="((.+?)\s)?<(.+?)@(.+?)>"
                     :maxlength="300" />
                 </b-field>
               </div>

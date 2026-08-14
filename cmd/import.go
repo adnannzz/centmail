@@ -7,9 +7,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/knadh/listmonk/internal/auth"
-	"github.com/knadh/listmonk/internal/subimporter"
-	"github.com/knadh/listmonk/models"
+	"github.com/adnannzz/centmail/internal/auth"
+	"github.com/adnannzz/centmail/internal/subimporter"
+	"github.com/adnannzz/centmail/models"
 	"github.com/labstack/echo/v4"
 )
 
@@ -76,7 +76,7 @@ func (a *App) ImportSubscribers(c echo.Context) error {
 	defer src.Close()
 
 	// Copy it to a temp location.
-	out, err := os.CreateTemp("", "listmonk")
+	out, err := os.CreateTemp("", "centmail")
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError,
 			a.i18n.Ts("import.errorCopyingFile", "error", err.Error()))

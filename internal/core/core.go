@@ -12,9 +12,9 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/adnannzz/centmail/internal/i18n"
+	"github.com/adnannzz/centmail/models"
 	"github.com/jmoiron/sqlx"
-	"github.com/knadh/listmonk/internal/i18n"
-	"github.com/knadh/listmonk/models"
 	"github.com/labstack/echo/v4"
 	"github.com/lib/pq"
 )

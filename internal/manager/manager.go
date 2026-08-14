@@ -18,9 +18,9 @@ import (
 	"maps"
 
 	"github.com/Masterminds/sprig/v3"
-	"github.com/knadh/listmonk/internal/i18n"
-	"github.com/knadh/listmonk/internal/notifs"
-	"github.com/knadh/listmonk/models"
+	"github.com/adnannzz/centmail/internal/i18n"
+	"github.com/adnannzz/centmail/internal/notifs"
+	"github.com/adnannzz/centmail/models"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )

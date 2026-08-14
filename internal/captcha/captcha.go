@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/adnannzz/centmail/internal/tmptokens"
 	"github.com/altcha-org/altcha-lib-go"
-	"github.com/knadh/listmonk/internal/tmptokens"
 )
 
 const (

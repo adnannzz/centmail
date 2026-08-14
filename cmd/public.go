@@ -12,11 +12,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/knadh/listmonk/internal/captcha"
-	"github.com/knadh/listmonk/internal/i18n"
-	"github.com/knadh/listmonk/internal/manager"
-	"github.com/knadh/listmonk/internal/notifs"
-	"github.com/knadh/listmonk/models"
+	"github.com/adnannzz/centmail/internal/captcha"
+	"github.com/adnannzz/centmail/internal/i18n"
+	"github.com/adnannzz/centmail/internal/manager"
+	"github.com/adnannzz/centmail/internal/notifs"
+	"github.com/adnannzz/centmail/models"
 	"github.com/labstack/echo/v4"
 	"github.com/lib/pq"
 )

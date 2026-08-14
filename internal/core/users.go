@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/knadh/listmonk/internal/auth"
-	"github.com/knadh/listmonk/internal/utils"
+	"github.com/adnannzz/centmail/internal/auth"
+	"github.com/adnannzz/centmail/internal/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/lib/pq"
 	"gopkg.in/volatiletech/null.v6"

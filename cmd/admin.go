@@ -7,7 +7,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/knadh/listmonk/internal/captcha"
+	"github.com/adnannzz/centmail/internal/captcha"
 	"github.com/labstack/echo/v4"
 	null "gopkg.in/volatiletech/null.v6"
 )

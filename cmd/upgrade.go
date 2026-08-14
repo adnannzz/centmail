@@ -5,9 +5,9 @@ import (
 	"log"
 	"strings"
 
+	"github.com/adnannzz/centmail/internal/migrations"
 	"github.com/jmoiron/sqlx"
 	"github.com/knadh/koanf/v2"
-	"github.com/knadh/listmonk/internal/migrations"
 	"github.com/knadh/stuffbin"
 	"github.com/lib/pq"
 	"golang.org/x/mod/semver"
@@ -117,7 +117,7 @@ func checkUpgrade(db *sqlx.DB) {
 		vers = append(vers, m.version)
 	}
 
-	lo.Fatalf(`there are %d pending database upgrade(s): %v. The last upgrade was %s. Backup the database and run listmonk --upgrade`,
+	lo.Fatalf(`there are %d pending database upgrade(s): %v. The last upgrade was %s. Backup the database and run centmail --upgrade`,
 		len(toRun), vers, lastVer)
 }
 

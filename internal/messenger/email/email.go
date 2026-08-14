@@ -9,8 +9,8 @@ import (
 	"net/textproto"
 	"strings"
 
-	"github.com/knadh/listmonk/internal/utils"
-	"github.com/knadh/listmonk/models"
+	"github.com/adnannzz/centmail/internal/utils"
+	"github.com/adnannzz/centmail/models"
 	"github.com/knadh/smtppool/v2"
 )
 

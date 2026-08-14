@@ -234,6 +234,13 @@ section {
     max-height: 17px;
     margin-top: 15px;
   }
+  .logo-text {
+    display: inline-block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 17px;
+    color: $primary;
+  }
   .favicon {
     margin-top: 12px;
     max-height: 24px;

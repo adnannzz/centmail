@@ -12,21 +12,21 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/adnannzz/centmail/internal/auth"
+	"github.com/adnannzz/centmail/internal/bounce"
+	"github.com/adnannzz/centmail/internal/buflog"
+	"github.com/adnannzz/centmail/internal/captcha"
+	"github.com/adnannzz/centmail/internal/core"
+	"github.com/adnannzz/centmail/internal/events"
+	"github.com/adnannzz/centmail/internal/i18n"
+	"github.com/adnannzz/centmail/internal/manager"
+	"github.com/adnannzz/centmail/internal/media"
+	"github.com/adnannzz/centmail/internal/messenger/email"
+	"github.com/adnannzz/centmail/internal/subimporter"
+	"github.com/adnannzz/centmail/models"
 	"github.com/jmoiron/sqlx"
 	"github.com/knadh/koanf/providers/env"
 	"github.com/knadh/koanf/v2"
-	"github.com/knadh/listmonk/internal/auth"
-	"github.com/knadh/listmonk/internal/bounce"
-	"github.com/knadh/listmonk/internal/buflog"
-	"github.com/knadh/listmonk/internal/captcha"
-	"github.com/knadh/listmonk/internal/core"
-	"github.com/knadh/listmonk/internal/events"
-	"github.com/knadh/listmonk/internal/i18n"
-	"github.com/knadh/listmonk/internal/manager"
-	"github.com/knadh/listmonk/internal/media"
-	"github.com/knadh/listmonk/internal/messenger/email"
-	"github.com/knadh/listmonk/internal/subimporter"
-	"github.com/knadh/listmonk/models"
 	"github.com/knadh/paginator"
 	"github.com/knadh/stuffbin"
 )
@@ -120,10 +120,10 @@ func init() {
 	initConfigFiles(ko.Strings("config"), ko)
 
 	// Load environment variables and merge into the loaded config.
-	// LISTMONK_foo__bar -> foo.bar (double underscore becomes dot for nested config)
-	// LISTMONK_static_dir -> static-dir (top-level keys with underscore become hyphen for CLI flags)
-	if err := ko.Load(env.Provider("LISTMONK_", ".", func(s string) string {
-		key := strings.ToLower(strings.TrimPrefix(s, "LISTMONK_"))
+	// CENTMAIL_foo__bar -> foo.bar (double underscore becomes dot for nested config)
+	// CENTMAIL_static_dir -> static-dir (top-level keys with underscore become hyphen for CLI flags)
+	if err := ko.Load(env.Provider("CENTMAIL_", ".", func(s string) string {
+		key := strings.ToLower(strings.TrimPrefix(s, "CENTMAIL_"))
 		key = strings.Replace(key, "__", ".", -1)
 		// Only convert underscore to hyphen for top-level keys (CLI flags like static-dir, i18n-dir)
 		// Nested config keys (containing dots) keep underscores (e.g., db.ssl_mode)

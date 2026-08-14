@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/knadh/listmonk/models"
+	"github.com/adnannzz/centmail/models"
 )
 
 // NewCampaignMessage creates and returns a CampaignMessage that is made available

@@ -1,11 +1,11 @@
 package main
 
 import (
+	"github.com/adnannzz/centmail/internal/core"
+	"github.com/adnannzz/centmail/internal/manager"
+	"github.com/adnannzz/centmail/internal/media"
+	"github.com/adnannzz/centmail/models"
 	"github.com/gofrs/uuid/v5"
-	"github.com/knadh/listmonk/internal/core"
-	"github.com/knadh/listmonk/internal/manager"
-	"github.com/knadh/listmonk/internal/media"
-	"github.com/knadh/listmonk/models"
 	"github.com/lib/pq"
 )
 

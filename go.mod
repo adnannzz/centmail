@@ -1,4 +1,4 @@
-module github.com/knadh/listmonk
+module github.com/adnannzz/centmail
 
 go 1.26.1
 
