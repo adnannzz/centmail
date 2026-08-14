@@ -74,7 +74,7 @@ const routes = [
   {
     path: '/campaigns/media',
     name: 'media',
-    meta: { title: 'globals.terms.media', group: 'campaigns' },
+    meta: { title: 'globals.terms.media', group: 'media' },
     component: () => import('../views/Media.vue'),
   },
   {

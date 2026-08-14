@@ -102,6 +102,10 @@ export default Vue.extend({
       formCopy: '',
       form: null,
       tab: 0,
+
+      // Order matches the <b-tab-item>s below. Used to deep-link to a
+      // specific tab via the `tab` query param, eg: /settings?tab=media.
+      tabNames: ['general', 'performance', 'privacy', 'security', 'media', 'smtp', 'bounces', 'messengers', 'appearance'],
     };
   },
 
@@ -291,7 +295,8 @@ export default Vue.extend({
   },
 
   mounted() {
-    this.tab = this.$utils.getPref('settings.tab') || 0;
+    const queryTabIdx = this.tabNames.indexOf(this.$route.query.tab);
+    this.tab = queryTabIdx >= 0 ? queryTabIdx : (this.$utils.getPref('settings.tab') || 0);
     this.getSettings();
   },
 

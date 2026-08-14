@@ -32,8 +32,6 @@
         :label="$t('menu.allCampaigns')" />
       <b-menu-item v-if="$can('campaigns:manage')" :to="{ name: 'campaign', params: { id: 'new' } }" tag="router-link"
         :active="activeItem.campaign" data-cy="new-campaign" icon="plus" :label="$t('menu.newCampaign')" />
-      <b-menu-item v-if="$can('media:*')" :to="{ name: 'media' }" tag="router-link" :active="activeItem.media"
-        data-cy="media" icon="image-outline" :label="$t('menu.media')" />
       <b-menu-item v-if="$can('templates:get')" :to="{ name: 'templates' }" tag="router-link"
         :active="activeItem.templates" data-cy="templates" icon="file-image-outline"
         :label="$t('globals.terms.templates')" />
@@ -41,6 +39,15 @@
         :active="activeItem.campaignAnalytics" data-cy="analytics" icon="chart-bar"
         :label="$t('globals.terms.analytics')" />
     </b-menu-item><!-- campaigns -->
+
+    <b-menu-item v-if="$can('media:*')" :expanded="activeGroup.media" :active="activeGroup.media"
+      data-cy="media" @update:active="(state) => toggleGroup('media', state)" icon="image-outline"
+      :label="$tc('globals.terms.media')">
+      <b-menu-item v-if="$can('media:get')" :to="{ name: 'media' }" tag="router-link" :active="activeItem.media"
+        data-cy="all-media" icon="image-outline" :label="$t('menu.allMedia')" />
+      <b-menu-item v-if="$can('settings:get')" :to="{ name: 'settings', query: { tab: 'media' } }" tag="router-link"
+        data-cy="media-settings" icon="cog-outline" :label="$t('menu.settings')" />
+    </b-menu-item><!-- media -->
 
     <b-menu-item v-if="$can('users:*', 'roles:*')" :expanded="activeGroup.users" :active="activeGroup.users"
       data-cy="users" @update:active="(state) => toggleGroup('users', state)" icon="account-multiple"
