@@ -1,5 +1,3 @@
-[![listmonk-logo](https://user-images.githubusercontent.com/547147/231084896-835dba66-2dfe-497c-ba0f-787564c0819e.png)](https://github.com/adnannzz/centmail)
-
 CentMail is a standalone, self-hosted, newsletter and mailing list manager. It is fast, feature-rich, and packed into a single binary. It uses a PostgreSQL database as its data store.
 
 CentMail is a fork of the open source [listmonk](https://listmonk.app) project, rebranded and maintained independently at [github.com/adnannzz/centmail](https://github.com/adnannzz/centmail).
