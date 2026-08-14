@@ -1,0 +1,32 @@
+# Runs the compiled `centmail` production binary against the same
+# Postgres database used by the dev stack (dev/docker-compose.yml),
+# instead of `go run` + a separate Vite dev server. Everything is
+# served from a single binary on :9000.
+#
+# Build the binary first (from the repo root):
+#   docker exec -w /app dev-backend-1 make dist
+# (or `make dist` directly if you have Go/Yarn/stuffbin locally)
+#
+# Start:  docker compose -f dev/docker-compose.prod.yml up -d
+# Stop:   docker compose -f dev/docker-compose.prod.yml down
+# Logs:   docker compose -f dev/docker-compose.prod.yml logs -f
+
+name: centmail-prod
+
+services:
+  app:
+    image: dev-backend
+    container_name: centmail-prod
+    command: ["./centmail", "--config", "dev/config.toml"]
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    volumes:
+      - ../:/app
+    networks:
+      - default
+
+networks:
+  default:
+    name: dev_listmonk-dev
+    external: true
